@@ -1,0 +1,373 @@
+[project]
+name = "gmoney"
+dynamic = ["version"]
+authors = [{ name = "Dima Burmistrov", email = "pyctrl.dev@gmail.com" }]
+description = "General Money"
+readme = "README.rst"
+license = { file = "LICENSE" }
+
+requires-python = ">=3.12"
+dependencies = [
+  "izulu",
+  "urnparse",
+  "sortedcontainers",
+]
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Libraries",
+  #  "Typing :: Typed",
+]
+keywords = ["money"]
+
+[project.urls]
+homepage = "https://github.com/pyctrl/gmoney"
+source = "https://github.com/pyctrl/gmoney"
+#documentation = "https://gmoney.readthedocs.io/en/latest/"
+issues = "https://github.com/pyctrl/gmoney/issues"
+
+
+[dependency-groups]
+# development
+dev = [
+  #  "deptry",
+  #  "gitlint",
+  "ipython",
+  "mypy",
+  "ruff",
+  "safety<3",
+  { include-group = "tests" },
+]
+tests = [
+  "pytest",
+  "pytest-cov",
+  "pytest-mock",
+  "pytest-randomly",
+  "pytest-timeout",
+  "pytest-xdist[psutil]>=3.6.1",
+  "typing-extensions",
+]
+rst = ["restructuredtext_lint", "Pygments"]
+# readme:
+#   rst
+#   rst-include = `rst_include include <in> <out>`
+#   docutils = `docutils README.rst README.html`
+mypy = ["mypy", "typing-extensions"]
+fmt = ["ruff"]
+doc = ["sphinx", "pydata-sphinx-theme", "sphinx-autobuild"]
+# release
+build = ["rst-include", "build", "twine"]
+upload = ["twine"]
+# extras
+# aliases
+contributor = [
+  { include-group = "dev" },
+  { include-group = "tests" },
+  { include-group = "rst" },
+  { include-group = "mypy" },
+  { include-group = "fmt" },
+  { include-group = "build" },
+  { include-group = "upload" },
+]
+# taplo - toml toolbox
+
+[project.optional-dependencies]
+compatibility = ["typing-extensions>=4.5.0"]
+
+[build-system]
+requires = ["setuptools>=61.2", "setuptools-scm", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+extend-exclude = [".git", ".venv"]
+
+[tool.ruff.lint]
+preview = true
+extend-select = ["ALL"]
+extend-ignore = [
+  "D10",   # missing documentation
+  "D203",  # 1 of conflicting code-styles
+  "D212",  # 1 of conflicting code-styles
+  "C408",  # allow `dict()` instead of literal
+  "TD003", # don't require issue link
+  # Completely disable
+  "FIX",
+  "CPY",
+  # formatter conflict rules
+  "W191",
+  "E111",
+  "E114",
+  "E117",
+  "D206",
+  "D300",
+  "Q000",
+  "Q001",
+  "Q002",
+  "Q003",
+  "COM812",
+  "COM819",
+  "ISC001",
+  "ISC002",
+  # no typings
+  "ANN001",
+  "ANN201",
+  "ANN202",
+  "ANN204",
+  "ANN206",
+  # other
+  "D400",
+  "D415",
+  "TRY003",
+  "DOC201",
+  "DOC501",
+  "ERA001",
+  "EM101",
+  "EM102",
+  "PLR0904",
+  "B904",
+  "PLW3201",
+  "N818",
+  "FBT002",
+]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"**/tests/*" = [
+  "S101",   # allow assert
+  "SLF001", # allow private member access
+  "ANN",    # annotations not required in tests
+  "PLR2004",
+  "PLR0904",
+  "B015",
+  "ERA001",
+  "PT011",
+  "FBT003",
+  "S403",
+  "S301",
+  "PLR6301",
+  "ARG001",
+  "B018",
+]
+
+[tool.ruff.lint.flake8-import-conventions.extend-aliases]
+"constants" = "c"
+"exceptions" = "excs"
+"typing" = "t"
+
+[tool.ruff.lint.flake8-import-conventions]
+banned-from = ["constants", "exceptions", "typing"]
+
+# [tool.ruff.lint.isort]
+# force-single-line = true
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.flake8-builtins]
+builtins-ignorelist = ["id"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+
+[tool.pytest.ini_options]
+addopts = "-vvv -ra --strict-markers --strict-config"
+testpaths = ["tests"]
+filterwarnings = ["error"]
+# seconds
+timeout = 5
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+include_namespace_packages = true
+# Regexes for lines to exclude from consideration
+omit = ["*/.venv/*", "*/.tox/*", '*/.uv-cache/*']
+exclude_also = [
+  # Don't complain about missing debug-only code:
+  "def __repr__",
+
+  # Don't complain if tests don't hit defensive assertion code:
+  "raise NotImplementedError",
+
+  # Don't complain if non-runnable code isn't run:
+  "if __name__ == .__main__.:",
+
+  # Don't complain about abstract methods, they aren't run:
+  "@(abc\\.)?abstractmethod",
+
+  "if TYPE_CHECKING:",
+]
+
+[tool.mypy]
+strict = true
+exclude = ["tests", ".venv"]
+
+
+[tool.flake8]
+show-source = true
+ignore = ["H404", "H405"]
+
+
+[tool.tox]
+requires = ["tox>4.23", "tox-uv>=1.13"]
+runner = "uv-venv-lock-runner"
+env_list = ["lint-py", "rst", "py313", "mypy"]
+use_develop = true
+
+[tool.tox.env.test]
+description = "run tests"
+dependency_groups = ["tests"]
+commands = [["pytest", "-n=auto", { replace = "posargs", extend = true }]]
+
+[tool.tox.env.coverage]
+description = "run coverage"
+dependency_groups = ["tests"]
+commands = [
+  [
+    "pytest",
+    "--cov=.",
+    "--cov-branch",
+    "--cov-report=term-missing:skip-covered",
+    { replace = "posargs", default = [
+      "--cov-report=xml:coverage.xml",
+    ], extend = true },
+  ],
+]
+
+[tool.tox.env.lint-py]
+description = "lint python files"
+deps = ["ruff"]
+skip_install = true
+commands = [
+  [
+    "ruff",
+    "format",
+    "--diff",
+    { replace = "posargs", default = [
+      "{tox_root}",
+    ], extend = true },
+  ],
+  [
+    "ruff",
+    "check",
+    { replace = "posargs", default = [
+      "{tox_root}",
+    ], extend = true },
+  ],
+]
+
+[tool.tox.env.fmt-py]
+description = "format python files"
+deps = ["ruff"]
+skip_install = true
+commands = [
+  [
+    "ruff",
+    "format",
+    { replace = "posargs", default = [
+      "{tox_root}",
+    ], extend = true },
+  ],
+  [
+    "ruff",
+    "check",
+    "--fix",
+    "--show-fixes",
+    { replace = "posargs", default = [
+      "{tox_root}",
+    ], extend = true },
+  ],
+]
+
+[tool.tox.env.rst]
+skip_install = true
+dependency_groups = ["rst"]
+commands = [
+  [
+    "rst-lint",
+    { replace = "posargs", extend = true },
+    "{toxinidir}{/}README.rst",
+  ],
+]
+
+[tool.tox.env.lint-mypy]
+description = "lint python typing"
+deps = ["mypy"]
+commands = [
+  [
+    "mypy",
+    { replace = "posargs", default = [
+      "{tox_root}",
+    ], extend = true },
+  ],
+]
+
+[tool.tox.env.fmt-toml]
+description = "format toml files"
+allowlist_externals = ["taplo"]
+skip_install = true
+commands = [["taplo", "format", { replace = "posargs", extend = true }]]
+
+[tool.tox.env.build]
+skip_install = true
+dependency_groups = ["build"]
+commands = [
+  [
+    "python3",
+    "-m",
+    "build",
+    { replace = "posargs", extend = true },
+  ],
+  [
+    "python3",
+    "-m",
+    "twine",
+    "check",
+    { replace = "posargs", extend = true },
+    "dist{/}*",
+  ],
+]
+
+[tool.tox.env.upload_test]
+skip_install = true
+dependency_groups = ["upload"]
+commands = [
+  [
+    "python3",
+    "-m",
+    "twine",
+    "upload",
+    { replace = "posargs", extend = true },
+    "--repository",
+    "{env:PYPI_REPOSITORY:testpypi}",
+    "dist{/}*",
+  ],
+]
+
+[tool.tox.env.upload_prod]
+base = ["tool.tox.env.upload_test"]
+set_env.PYPI_REPOSITORY = "pypi"
+
+[tool.tox.env.clean]
+skip_install = true
+dependency_groups = []
+allowlist_externals = ["rm"]
+commands = [
+  [
+    "rm",
+    "-rf",
+    "{toxinidir}/dist/",
+    "{toxinidir}/{[project]name}.egg-info/",
+  ],
+]
